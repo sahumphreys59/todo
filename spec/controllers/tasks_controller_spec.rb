@@ -17,13 +17,23 @@ RSpec.describe TasksController, type: :controller do
 		end
 	end
 
-	describe "taks#update" do 
+	describe "tasks#update" do 
 		it "should alow tasks to marked as done" do 
 			task = FactoryBot.create(:task, done: false)
 			post :update, params: {id: task.id, task: { done: true}}
 			expect(response).to have_http_status(:success)
 			task.reload
 			expect(task.done).to eq(true)
+		end
+	end	
+
+	describe "tasks#create"	do 
+		it "should allow new tasks to be created" do
+			post :create, params: {task: {title: "Wash car"}}
+			expect(response).to have_http_status(:success)
+			response_value = ActiveSupport::JSON.decode(@response.body)
+			expect(response_value['title']).to eq("Wash car")
+			expect(Task.last.title).to eq("Wash car")
 		end
 	end		
 end
